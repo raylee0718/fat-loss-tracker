@@ -24,21 +24,6 @@ export function calculateWeightChange(logs) {
   return Number(validLogs.at(-1).weight) - Number(validLogs[0].weight);
 }
 
-export function getHabitCounts(logs) {
-  return (Array.isArray(logs) ? logs : []).reduce(
-    (counts, log) => {
-      const habits = log.habits || {};
-      return {
-        sugaryDrink: counts.sugaryDrink + (habits.sugaryDrink ? 1 : 0),
-        lateNightSnack: counts.lateNightSnack + (habits.lateNightSnack ? 1 : 0),
-        friedFood: counts.friedFood + (habits.friedFood ? 1 : 0),
-        dessert: counts.dessert + (habits.dessert ? 1 : 0)
-      };
-    },
-    { sugaryDrink: 0, lateNightSnack: 0, friedFood: 0, dessert: 0 }
-  );
-}
-
 export function getWorkoutSummaryForDate(workoutLogs, date) {
   return getStrengthWorkoutSummaryForDate(workoutLogs, date);
 }

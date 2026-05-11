@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Copy, MessageSquareText } from "lucide-react";
 import { Card } from "../components/Card";
 import {
   addMealTemplate,
@@ -21,19 +22,13 @@ const mealFields = [
   ["snacks", "加餐 / 宵夜", "加入加餐 / 宵夜常用餐點"]
 ];
 
-const habitFields = [
-  ["sugaryDrink", "是否喝含糖飲料"],
-  ["lateNightSnack", "是否吃宵夜"],
-  ["friedFood", "是否吃炸物"],
-  ["dessert", "是否吃點心"]
-];
-
 export function DailyLog({ data, onSaveDailyLog }) {
   const [selectedDate, setSelectedDate] = useState(getTodayDateString());
   const [form, setForm] = useState(() => getLogByDate(data.dailyLogs, selectedDate) || createEmptyDailyLog(selectedDate));
   const [originalRecord, setOriginalRecord] = useState(form);
   const [saveMessage, setSaveMessage] = useState("");
   const [notice, setNotice] = useState("");
+  const [copyMessage, setCopyMessage] = useState("");
   const [mealTemplates, setMealTemplates] = useState(getMealTemplates);
   const [templateCategory, setTemplateCategory] = useState("breakfast");
   const [templateInput, setTemplateInput] = useState("");
@@ -48,6 +43,10 @@ export function DailyLog({ data, onSaveDailyLog }) {
   const sleepGoal = Number(data.settings.dailySleepGoal) || 7;
   const currentRecord = buildDailyRecord(form, selectedDate, waterMl, sleepHours);
   const hasChanges = hasUnsavedChanges(originalRecord, currentRecord);
+  const coachReport = useMemo(
+    () => buildCoachReport({ form, selectedDate, waterMl, waterGoal, sleepHours }),
+    [form, selectedDate, waterMl, waterGoal, sleepHours]
+  );
 
   useEffect(() => {
     const dateChanged = previousSelectedDate.current !== selectedDate;
@@ -57,6 +56,7 @@ export function DailyLog({ data, onSaveDailyLog }) {
     if (dateChanged) {
       setSaveMessage("");
       setNotice("");
+      setCopyMessage("");
     }
     previousSelectedDate.current = selectedDate;
   }, [data.dailyLogs, selectedDate]);
@@ -75,19 +75,8 @@ export function DailyLog({ data, onSaveDailyLog }) {
   const updateField = (key, value) => {
     setSaveMessage("");
     setNotice("");
+    setCopyMessage("");
     setForm((current) => ({ ...current, [key]: value }));
-  };
-
-  const updateHabit = (key) => {
-    setSaveMessage("");
-    setNotice("");
-    setForm((current) => ({
-      ...current,
-      habits: {
-        ...current.habits,
-        [key]: !current.habits?.[key]
-      }
-    }));
   };
 
   const copyYesterdayMeals = () => {
@@ -108,6 +97,7 @@ export function DailyLog({ data, onSaveDailyLog }) {
       snacks: previousLog.snacks || ""
     }));
     setNotice("已複製昨天的餐食。");
+    setCopyMessage("");
     setSaveMessage("");
   };
 
@@ -140,6 +130,13 @@ export function DailyLog({ data, onSaveDailyLog }) {
 
   const addWater = (amount) => updateField("waterMl", Math.max(0, waterMl + amount));
 
+  const copyCoachReport = async () => {
+    const copied = await copyTextToClipboard(coachReport);
+    setCopyMessage(copied ? "已複製回報內容" : "複製失敗，請手動選取回報內容");
+    setNotice("");
+    setSaveMessage("");
+  };
+
   const saveLog = () => {
     const nextRecord = buildDailyRecord(form, selectedDate, waterMl, sleepHours);
     onSaveDailyLog(nextRecord);
@@ -156,7 +153,7 @@ export function DailyLog({ data, onSaveDailyLog }) {
           <div>
             <p className="text-sm font-semibold text-teal-700">每日紀錄</p>
             <h2 className="mt-1 text-2xl font-bold text-slate-950">記錄今天最重要的減脂資料</h2>
-            <p className="mt-2 text-sm text-slate-500">保留體重、餐食、喝水、睡眠與習慣，畫面更簡潔。</p>
+            <p className="mt-2 text-sm text-slate-500">保留體重、餐食、喝水與睡眠，畫面更簡潔。</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button className="secondary-btn" type="button" onClick={() => setSelectedDate(getDateOffset(selectedDate, -1))}>前一天</button>
@@ -254,15 +251,13 @@ export function DailyLog({ data, onSaveDailyLog }) {
         </div>
       </Section>
 
-      <Section title="習慣紀錄">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {habitFields.map(([key, label]) => (
-            <button key={key} type="button" onClick={() => updateHabit(key)} className={`rounded-lg border p-4 text-left transition ${form.habits?.[key] ? "border-amber-300 bg-amber-50 text-amber-900" : "border-slate-200 bg-white text-slate-600 hover:border-teal-300"}`}>
-              <p className="font-bold">{label}</p>
-              <p className="mt-1 text-sm">{form.habits?.[key] ? "有" : "沒有"}</p>
-            </button>
-          ))}
+      <Section title="今日回報" icon={MessageSquareText}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-accent text-sm text-slate-500">可直接複製後貼到 LINE、Messenger 或備忘錄傳給教練。</p>
+          <button className="primary-btn" type="button" onClick={copyCoachReport}><Copy size={17} strokeWidth={1.9} />複製回報內容</button>
         </div>
+        {copyMessage && <div className="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{copyMessage}</div>}
+        <pre className="mt-4 whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-50 p-4 font-sans text-sm leading-7 text-slate-800">{coachReport}</pre>
       </Section>
 
       <div className="flex justify-end"><button className="primary-btn px-6" type="button" onClick={saveLog}>儲存每日紀錄</button></div>
@@ -281,27 +276,100 @@ function buildDailyRecord(form, date, waterMl, sleepHours) {
     waterMl,
     sleepStart: form.sleepStart || "",
     wakeTime: form.wakeTime || "",
-    sleepHours,
-    habits: {
-      sugaryDrink: !!form.habits?.sugaryDrink,
-      lateNightSnack: !!form.habits?.lateNightSnack,
-      friedFood: !!form.habits?.friedFood,
-      dessert: !!form.habits?.dessert
-    }
+    sleepHours
   };
 }
 
+function buildCoachReport({ form, selectedDate, waterMl, waterGoal, sleepHours }) {
+  const reportDate = formatReportDate(selectedDate);
+  const weightText = hasValue(form.weight) ? `${form.weight} kg` : "未紀錄";
+  const waterText = `${formatSafeNumber(waterMl)} / ${formatSafeNumber(waterGoal)} ml`;
+  const sleepText = formatReportSleep(form.sleepStart, form.wakeTime, sleepHours);
+
+  return [
+    `【每日回報｜${reportDate}】`,
+    "",
+    `體重：${weightText}`,
+    "",
+    "早餐：",
+    formatReportText(form.breakfast),
+    "",
+    "午餐：",
+    formatReportText(form.lunch),
+    "",
+    "晚餐：",
+    formatReportText(form.dinner),
+    "",
+    "加餐 / 宵夜：",
+    formatReportText(form.snacks),
+    "",
+    `飲水量：${waterText}`,
+    "",
+    `睡眠：${sleepText}`
+  ].join("\n");
+}
+
+function formatReportDate(dateString) {
+  const parts = String(dateString || "").split("-");
+  if (parts.length !== 3 || parts.some((part) => !part)) return "未紀錄";
+  return parts.join("/");
+}
+
+function formatReportText(value) {
+  const text = String(value ?? "").trim();
+  return text || "未紀錄";
+}
+
+function formatReportSleep(sleepStart, wakeTime, sleepHours) {
+  if (!sleepStart || !wakeTime || !sleepHours) return "未紀錄";
+  return `昨晚 ${sleepStart} 入睡，今天 ${wakeTime} 起床，共 ${formatSafeNumber(sleepHours)} 小時`;
+}
+
+function formatSafeNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "0";
+  return Number.isInteger(number) ? String(number) : number.toFixed(1);
+}
+
+function hasValue(value) {
+  return String(value ?? "").trim() !== "";
+}
+
+async function copyTextToClipboard(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall back to a temporary textarea below.
+  }
+
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return copied;
+  } catch {
+    return false;
+  }
+}
+
 function DailySummary({ form, bmi, waterPercent, sleepHours }) {
-  const habits = habitFields.filter(([key]) => form.habits?.[key]).map(([, label]) => label.replace("是否", ""));
   return (
     <Card>
       <h3 className="mb-4 text-lg font-bold text-slate-950">今日摘要</h3>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryItem label="體重" value={form.weight ? `${form.weight} kg` : "尚未紀錄"} />
         <SummaryItem label="BMI" value={bmi ? bmi.toFixed(1) : "尚未紀錄"} />
         <SummaryItem label="喝水進度" value={`${waterPercent}%`} />
         <SummaryItem label="睡眠" value={sleepHours ? `${sleepHours} 小時` : "尚未紀錄"} />
-        <SummaryItem label="習慣" value={habits.length ? habits.join("、") : "尚未紀錄"} />
       </div>
     </Card>
   );
@@ -339,8 +407,16 @@ function getMealEmptyMessage(category) {
   return `尚未建立${label}常用餐點`;
 }
 
-function Section({ title, children }) {
-  return <Card><div className="mb-4"><h3 className="text-lg font-bold text-slate-950">{title}</h3></div>{children}</Card>;
+function Section({ title, children, icon: Icon }) {
+  return (
+    <Card>
+      <div className="mb-4 flex items-center gap-2">
+        {Icon && <Icon className="text-teal-700" size={19} strokeWidth={1.9} />}
+        <h3 className="text-lg font-bold text-slate-950">{title}</h3>
+      </div>
+      {children}
+    </Card>
+  );
 }
 
 function Input({ label, value, onChange, type = "text", placeholder = "", disabled = false }) {

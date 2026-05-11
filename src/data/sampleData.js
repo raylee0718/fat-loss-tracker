@@ -10,8 +10,7 @@ export const sampleData = {
       waterMl: 2200,
       sleepStart: "00:20",
       wakeTime: "07:20",
-      sleepHours: 7,
-      habits: { sugaryDrink: false, lateNightSnack: false, friedFood: true, dessert: false }
+      sleepHours: 7
     },
     {
       date: "2026-05-04",
@@ -23,8 +22,7 @@ export const sampleData = {
       waterMl: 2050,
       sleepStart: "23:30",
       wakeTime: "07:00",
-      sleepHours: 7.5,
-      habits: { sugaryDrink: false, lateNightSnack: false, friedFood: false, dessert: false }
+      sleepHours: 7.5
     },
     {
       date: "2026-05-05",
@@ -36,8 +34,7 @@ export const sampleData = {
       waterMl: 1600,
       sleepStart: "01:30",
       wakeTime: "08:30",
-      sleepHours: 7,
-      habits: { sugaryDrink: true, lateNightSnack: false, friedFood: false, dessert: true }
+      sleepHours: 7
     },
     {
       date: "2026-05-06",
@@ -49,8 +46,7 @@ export const sampleData = {
       waterMl: 2300,
       sleepStart: "23:50",
       wakeTime: "07:10",
-      sleepHours: 7.3,
-      habits: { sugaryDrink: false, lateNightSnack: false, friedFood: false, dessert: false }
+      sleepHours: 7.3
     },
     {
       date: "2026-05-07",
@@ -62,8 +58,7 @@ export const sampleData = {
       waterMl: 2100,
       sleepStart: "00:10",
       wakeTime: "07:00",
-      sleepHours: 6.8,
-      habits: { sugaryDrink: false, lateNightSnack: false, friedFood: false, dessert: false }
+      sleepHours: 6.8
     },
     {
       date: "2026-05-08",
@@ -75,8 +70,7 @@ export const sampleData = {
       waterMl: 1250,
       sleepStart: "23:30",
       wakeTime: "07:00",
-      sleepHours: 7.5,
-      habits: { sugaryDrink: false, lateNightSnack: false, friedFood: false, dessert: false }
+      sleepHours: 7.5
     }
   ],
   workoutLogs: [

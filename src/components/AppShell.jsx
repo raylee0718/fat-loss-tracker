@@ -1,9 +1,9 @@
-import { Activity, BarChart3, CalendarDays, Dumbbell, Ruler, Settings } from "lucide-react";
+import { ChartLine, Dumbbell, LayoutDashboard, NotebookPen, Ruler, Settings } from "lucide-react";
 
 const tabs = [
-  { key: "dashboard", label: "首頁", icon: BarChart3 },
-  { key: "dailyLog", label: "每日紀錄", icon: CalendarDays },
-  { key: "weightTrend", label: "體重趨勢", icon: Activity },
+  { key: "dashboard", label: "首頁", icon: LayoutDashboard },
+  { key: "dailyLog", label: "每日紀錄", icon: NotebookPen },
+  { key: "weightTrend", label: "體重趨勢", icon: ChartLine },
   { key: "exerciseLog", label: "重訓紀錄", icon: Dumbbell },
   { key: "bodyMeasurement", label: "體態紀錄", icon: Ruler },
   { key: "settings", label: "設定", icon: Settings }
@@ -14,8 +14,8 @@ export function AppShell({ activeTab, onTabChange, children }) {
     <div className="min-h-screen px-4 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="mb-5">
-          <p className="text-sm font-semibold text-teal-700">本機個人紀錄</p>
-          <h1 className="mt-1 text-3xl font-bold text-slate-950 sm:text-4xl">減脂追蹤器</h1>
+          <p className="font-accent text-sm font-semibold text-teal-700">本機個人紀錄</p>
+          <h1 className="mt-1 font-accent text-3xl font-bold text-slate-950 sm:text-4xl">減脂追蹤器</h1>
         </header>
 
         <nav className="mb-5 flex gap-2 overflow-x-auto rounded-lg border border-white/80 bg-white/70 p-2 shadow-soft backdrop-blur">
@@ -31,7 +31,7 @@ export function AppShell({ activeTab, onTabChange, children }) {
                   activeTab === tab.key ? "bg-teal-600 text-white shadow-sm" : "text-slate-600 hover:bg-teal-50 hover:text-teal-700"
                 }`}
               >
-                <Icon size={17} />
+                <Icon size={18} strokeWidth={1.9} />
                 {tab.label}
               </button>
             );

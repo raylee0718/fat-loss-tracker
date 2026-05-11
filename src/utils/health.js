@@ -65,12 +65,6 @@ export function createEmptyDailyLog(date = getTodayDateString()) {
     waterMl: 0,
     sleepStart: "",
     wakeTime: "",
-    sleepHours: 0,
-    habits: {
-      sugaryDrink: false,
-      lateNightSnack: false,
-      friedFood: false,
-      dessert: false
-    }
+    sleepHours: 0
   };
 }

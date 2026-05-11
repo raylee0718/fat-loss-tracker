@@ -128,13 +128,7 @@ function normalizeComparableRecord(record) {
     waterMl: Number(record?.waterMl) || 0,
     sleepStart: record?.sleepStart || "",
     wakeTime: record?.wakeTime || "",
-    sleepHours: Number(record?.sleepHours) || 0,
-    habits: {
-      sugaryDrink: !!record?.habits?.sugaryDrink,
-      lateNightSnack: !!record?.habits?.lateNightSnack,
-      friedFood: !!record?.habits?.friedFood,
-      dessert: !!record?.habits?.dessert
-    }
+    sleepHours: Number(record?.sleepHours) || 0
   };
 }
 

@@ -1,4 +1,4 @@
-import { Activity, Droplets, HeartPulse, Moon, Ruler, Scale, Utensils } from "lucide-react";
+import { Activity, Droplets, HeartPulse, Moon, Ruler, Scale } from "lucide-react";
 import { Card } from "../components/Card";
 import { EmptyState } from "../components/EmptyState";
 import {
@@ -6,20 +6,12 @@ import {
   calculateMeasurementChanges,
   calculateWeightChange,
   formatNumber,
-  getHabitCounts,
   getLastNDaysLogs,
   getLatestMeasurement,
   getPreviousBodyMeasurement
 } from "../utils/dashboard";
 import { calculateBMI, getLatestLog, getLogByDate, getTodayDateString } from "../utils/health";
 import { getWorkoutSummaryForDate } from "../utils/workouts";
-
-const habitLabels = [
-  ["sugaryDrink", "含糖飲料"],
-  ["lateNightSnack", "宵夜"],
-  ["friedFood", "炸物"],
-  ["dessert", "點心"]
-];
 
 export function Dashboard({ data }) {
   const today = getTodayDateString();
@@ -40,8 +32,6 @@ export function Dashboard({ data }) {
   const latestMeasurement = getLatestMeasurement(bodyMeasurements);
   const previousMeasurement = getPreviousBodyMeasurement(bodyMeasurements);
   const measurementChanges = calculateMeasurementChanges(latestMeasurement, previousMeasurement);
-  const todayHabitBadges = getTodayHabitBadges(todayLog);
-  const last7HabitCounts = getHabitCounts(last7Logs);
   const weightChange7 = calculateWeightChange(last7WeightLogs);
   const averageSleep = calculateAverage(last7Logs.map((log) => log.sleepHours));
   const averageWater = calculateAverage(last7Logs.map((log) => log.waterMl));
@@ -55,7 +45,6 @@ export function Dashboard({ data }) {
           <OverviewCard icon={HeartPulse} title="今日 BMI" value={todayBmi ? todayBmi.toFixed(1) : "尚未紀錄"} />
           <OverviewCard icon={Droplets} title="今日喝水進度" value={`${todayWater} / ${waterGoal} ml`} helper={`完成 ${todayWaterPercent}%`}><ProgressBar value={todayWaterPercent} /></OverviewCard>
           <OverviewCard icon={Moon} title="今日睡眠時數" value={todayLog?.sleepHours ? `${todayLog.sleepHours} 小時` : "尚未紀錄"} helper={`目標 ${sleepGoal} 小時`} />
-          <OverviewCard icon={Utensils} title="今日習慣狀態" value={todayHabitBadges.length ? todayHabitBadges.join("、") : "尚未紀錄"} helper={todayHabitBadges.length ? "今日需留意" : "沒有不利習慣紀錄"} />
           <OverviewCard icon={Activity} title="今日訓練摘要" value={todayWorkout ? `${todayWorkout.exerciseCount} 個動作，${todayWorkout.setCount} 組` : "今天尚未記錄訓練"} helper={todayWorkout?.names?.length ? todayWorkout.names.slice(0, 3).join("、") : ""} />
         </div>
       </DashboardSection>
@@ -77,7 +66,6 @@ export function Dashboard({ data }) {
           <Metric label="體重變化" value={weightChange7 !== null ? `${formatSigned(weightChange7)} kg` : "尚未紀錄"} />
           <Metric label="平均喝水" value={averageWater ? `${formatNumber(averageWater, 0)} ml` : "尚未紀錄"} />
           <Metric label="平均睡眠" value={averageSleep ? `${formatNumber(averageSleep)} 小時` : "尚未紀錄"} />
-          <Metric label="習慣總次數" value={`${Object.values(last7HabitCounts).reduce((sum, count) => sum + count, 0)} 次`} />
         </div>
       </DashboardSection>
     </div>
@@ -103,12 +91,6 @@ function MeasurementMetric({ label, value, change }) {
 function ProgressBar({ value }) {
   const width = Math.min(Math.max(Number(value) || 0, 0), 100);
   return <div className="h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${width}%` }} /></div>;
-}
-
-function getTodayHabitBadges(log) {
-  if (!log) return [];
-  const habits = log.habits || {};
-  return habitLabels.filter(([key]) => habits[key]).map(([, label]) => label);
 }
 
 function formatSigned(value) {

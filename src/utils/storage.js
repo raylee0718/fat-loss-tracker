@@ -176,13 +176,7 @@ export function normalizeDailyLog(log = {}) {
     waterMl: Math.max(0, Number(log.waterMl) || 0),
     sleepStart: log.sleepStart || "",
     wakeTime: log.wakeTime || "",
-    sleepHours: Number(log.sleepHours) || 0,
-    habits: {
-      sugaryDrink: !!(log.habits?.sugaryDrink ?? log.sugaryDrink),
-      lateNightSnack: !!(log.habits?.lateNightSnack ?? log.habits?.lateSnack ?? log.lateNightSnack ?? log.lateSnack),
-      friedFood: !!(log.habits?.friedFood ?? log.friedFood),
-      dessert: !!(log.habits?.dessert ?? log.habits?.sweets ?? log.dessert ?? log.sweets)
-    }
+    sleepHours: Number(log.sleepHours) || 0
   };
 }
 

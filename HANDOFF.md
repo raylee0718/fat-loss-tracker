@@ -1,10 +1,10 @@
-# Fat Loss Tracker Handoff
+﻿# Fat Loss Tracker Handoff
 
 ## 1. Project Overview
 
-This is a local-only personal fat-loss tracking web app built for daily self-use. It tracks body weight, BMI, meals, water intake, sleep, habits, strength training, and body measurements. There is no backend; all data is stored in the browser through `localStorage`.
+This is a local-first personal fat-loss tracking web app for daily self-use. It is a React + Vite single-page app with a Traditional Chinese zh-TW user interface. It tracks body weight, BMI, meals, water intake, sleep, strength training, and body measurements. It also generates a fixed-format daily coach report that can be copied and sent to a fitness coach.
 
-The UI is intended to be entirely Traditional Chinese zh-TW. The app has recently been simplified: Dashboard is intentionally glanceable, Daily Log no longer uses steps or notes, body measurements no longer use notes, meal templates are categorized by meal type, and water quick buttons support multiple custom amounts.
+There is no backend, login, cloud sync, calorie tracking, AI meal analysis, or AI photo recognition. All user data is stored in the browser through `localStorage`.
 
 ## 2. Tech Stack
 
@@ -12,29 +12,40 @@ The UI is intended to be entirely Traditional Chinese zh-TW. The app has recentl
 - Styling: Tailwind CSS
 - Charts: Recharts
 - Icons: lucide-react
+- Fonts: Google Fonts via CSS import
+  - Main UI: `Noto Sans TC`
+  - Accent: `LXGW WenKai TC`
 - Persistence: browser `localStorage`
 - PWA: `vite-plugin-pwa`
 - Build scripts:
-  - `npm.cmd run dev`
-  - `npm.cmd run build`
-  - `npm.cmd run preview`
+  - `npm run dev`
+  - `npm run build`
+  - `npm run preview`
 
-## 3. Current Folder/File Structure
+On Windows PowerShell, `npm` may be blocked by execution policy. Use `npm.cmd run build` or `cmd /c "npm run build"` if needed.
+
+## 3. Current Folder / File Structure
 
 ```text
 fat-loss-tracker/
+  .gitignore
   index.html
   package.json
   package-lock.json
   vite.config.js
   tailwind.config.js
   postcss.config.js
+  README.md
   HANDOFF.md
   public/
-    favicon.svg
     apple-touch-icon.png
+    favicon.ico
+    favicon.svg
+    maskable-icon-512x512.png
     pwa-192x192.png
     pwa-512x512.png
+    icons/
+      app-icon-source.png
   src/
     main.jsx
     App.jsx
@@ -44,67 +55,67 @@ fat-loss-tracker/
       Card.jsx
       EmptyState.jsx
       StatCard.jsx
-    pages/
-      Dashboard.jsx
-      DailyLog.jsx
-      WeightTrend.jsx
-      ExerciseLog.jsx
-      BodyMeasurement.jsx
-      Settings.jsx
-    utils/
-      storage.js
-      health.js
-      dailyLog.js
-      workouts.js
-      bodyMeasurements.js
-      dashboard.js
     data/
       sampleData.js
+    pages/
+      BodyMeasurement.jsx
+      DailyLog.jsx
+      Dashboard.jsx
+      ExerciseLog.jsx
+      Settings.jsx
+      WeightTrend.jsx
+    utils/
+      bodyMeasurements.js
+      dailyLog.js
+      dashboard.js
+      health.js
+      storage.js
+      workouts.js
 ```
 
-Generated folders/files may also exist:
+Generated folders may also exist locally:
 
 ```text
 dist/
 dev-dist/
-vite.log
+node_modules/
 ```
 
-## 4. Current Pages
+`dist/`, `dev-dist/`, and `node_modules/` are ignored by Git.
 
-- Dashboard: simplified homepage with today’s weight, BMI, water progress, sleep, habits, compact training summary, latest body summary, and a short recent 7-record recap. It should stay uncluttered and should not show step count.
-- Daily Log: daily form for date, weight, breakfast/lunch/dinner/snacks, categorized meal template insertion, water intake with configurable quick buttons, sleep start/wake time with automatic sleep duration, and four habit toggles.
-- Weight Trend: current weight, target weight, target gap, current BMI, weight line chart, and BMI line chart.
-- Exercise Log: strength-training-only tracker. Supports user-defined favorite exercises, adding custom exercises, auto-filling the most recent previous sets for the same movement, per-set logging, history by date, and movement progress records with a highest-weight chart.
-- Body Measurement: body measurement form and trends for waist, hip, chest, and thigh. Notes are intentionally removed from the visible workflow.
-- Settings: body target settings, height, daily water goal, multiple water quick amount management, sleep goal, data export/import, and sample data controls.
+## 4. Current Pages and Features
+
+- App Shell: top header and tab navigation for all app pages. Main navigation uses lucide-react icons.
+- Dashboard: simplified overview of today's weight, BMI, water progress, sleep, training summary, latest body measurements, and recent 7-day recap. Habit tracking is intentionally not shown.
+- Daily Log: daily form for date, weight, meals, water intake, sleep times, and a copyable coach report preview. It supports categorized meal templates and configurable water quick buttons.
+- Weight Trend: current weight, target weight, target gap, current BMI, weight trend chart, and BMI trend chart.
+- Exercise Log: strength-training-only tracker with favorite exercises, custom exercises, multiple exercises per workout, multiple individual set records per exercise, previous-set auto-fill, history, and movement progress.
+- Body Measurement: body measurement form, latest summary, history table, and trend charts for waist, hip, chest, and thigh.
+- Settings: body target settings, height, daily water goal, water quick amount management, sleep goal, export/import, and sample data controls.
 
 ## 5. Implemented Features
 
 - Daily weight tracking
 - BMI calculation from settings height
-- Meal logging for breakfast, lunch, dinner, and snacks / late-night snack
+- Meal logging for breakfast, lunch, dinner, and snacks / late-night snacks
 - Categorized custom meal templates:
   - `breakfast`
   - `lunch`
   - `dinner`
   - `snacks`
-- Meal template insertion with `、` delimiter and duplicate prevention within a field
+- Meal template insertion with the `、` delimiter and duplicate prevention within a field
+- Daily coach report generation from the current Daily Log form state
+- Copy-to-clipboard button for the coach report
 - Water logging with multiple configurable quick buttons
 - Sleep tracking with automatic duration calculation
 - Sleep duration supports crossing midnight
-- Habit tracking:
-  - sugary drink
-  - late-night snack
-  - fried food
-  - dessert
 - Simplified dashboard summary
 - Weight and BMI trend charts
 - Strength-training-only exercise log
+- User-defined favorite exercises
 - Multiple exercises per workout
-- Multiple sets per exercise
+- Multiple individual set records per exercise
 - Per-set set type, weight, reps, and rest seconds
-- User-defined favorite exercises in `localStorage`
 - Auto-fill latest previous same-exercise set structure when adding a movement
 - Exercise progress records by movement
 - Highest-weight trend chart for selected movement when enough data exists
@@ -114,19 +125,22 @@ vite.log
   - chest
   - thigh
 - Body measurement trend charts
-- Data export/import
+- Data export/import for manual backup
 - Sample data load/clear
-- PWA configuration with manifest, service worker generation, and basic icons
+- PWA manifest, service worker generation, and updated browser/mobile icons
+- Typography update:
+  - `Noto Sans TC` for the main UI
+  - `LXGW WenKai TC` for selected warm accent areas
 
-## 6. localStorage Keys and Current Data Structures
+## 6. localStorage Keys and Data Structures
 
-Main app data:
+Main app data key:
 
 ```js
 localStorage["fatLossTrackerStepOneData"]
 ```
 
-Shape:
+Current shape:
 
 ```js
 {
@@ -150,10 +164,6 @@ Settings:
 }
 ```
 
-Backward compatibility:
-- Old `settings.customWaterQuickAmount` is normalized into `waterQuickAmounts`.
-- Missing/incomplete settings are merged with defaults.
-
 Daily logs:
 
 ```js
@@ -168,27 +178,18 @@ Daily logs:
     waterMl: 0,
     sleepStart: "",
     wakeTime: "",
-    sleepHours: 0,
-    habits: {
-      sugaryDrink: false,
-      lateNightSnack: false,
-      friedFood: false,
-      dessert: false
-    }
+    sleepHours: 0
   }
 ]
 ```
 
-Backward compatibility:
-- Old `steps` and `notes` fields may remain in older browser data, but current normalization removes them from active app state.
-
-Meal templates:
+Meal templates key:
 
 ```js
 localStorage["mealTemplates"]
 ```
 
-Current shape:
+Shape:
 
 ```js
 {
@@ -199,10 +200,7 @@ Current shape:
 }
 ```
 
-Backward compatibility:
-- Old array format such as `["無糖豆漿", "茶葉蛋"]` is normalized into `breakfast`.
-
-Favorite exercises:
+Favorite exercises key:
 
 ```js
 localStorage["favoriteExercises"]
@@ -246,10 +244,6 @@ Supported set types:
 ["熱身組", "正式組", "遞減組", "力竭組", "其他"]
 ```
 
-Backward compatibility:
-- Old workout/exercise/set notes should not crash the app; current normalization ignores note fields.
-- Old workout formats with exercise-level `sets` count are migrated into per-set records.
-
 Body measurements:
 
 ```js
@@ -265,12 +259,19 @@ Body measurements:
 ]
 ```
 
-Backward compatibility:
-- Old `notes`/`note` fields should not crash the app and are ignored by current normalization.
+Backward compatibility notes:
+
+- Old `settings.customWaterQuickAmount` is normalized into `waterQuickAmounts`.
+- Old array-format `mealTemplates` are normalized into the `breakfast` category.
+- Old daily log `snack` is normalized into `snacks`.
+- Old daily log `habits`, `steps`, and `notes` may exist in older browser storage, but the current app no longer shows or uses them.
+- Old workout formats with exercise-level `sets` counts are migrated into individual set records.
+- Old workout note fields and body measurement note fields are ignored by current normalizers.
 
 ## 7. Important Helper Functions
 
 `src/utils/storage.js`
+
 - `readAppData()`
 - `writeAppData(data)`
 - `saveAppData(data)`
@@ -291,6 +292,7 @@ Backward compatibility:
 - `normalizeBodyMeasurement(record)`
 
 `src/utils/health.js`
+
 - `getTodayDateString()`
 - `calculateSleepHours(sleepStart, wakeTime)`
 - `calculateBMI(weight, heightCm)`
@@ -301,8 +303,9 @@ Backward compatibility:
 - `createEmptyDailyLog(date)`
 
 `src/utils/dailyLog.js`
+
 - `mealTemplateCategories`
-- `presetMealTemplates` currently empty by design
+- `presetMealTemplates`
 - `getDateOffset(dateString, offsetDays)`
 - `getPreviousDateString(dateString)`
 - `appendMealItem(currentText, item)`
@@ -315,6 +318,7 @@ Backward compatibility:
 - `formatSleepGoalComparison(sleepHours, goalHours)`
 
 `src/utils/workouts.js`
+
 - `setTypes`
 - `generateId()`
 - `getWorkoutLogs()`
@@ -344,6 +348,7 @@ Backward compatibility:
 - `buildCompactWorkoutSummary(workout)`
 
 `src/utils/bodyMeasurements.js`
+
 - `getBodyMeasurements()`
 - `saveBodyMeasurements(records)`
 - `sortBodyMeasurementsByDate(records)`
@@ -354,11 +359,11 @@ Backward compatibility:
 - `normalizeBodyMeasurement(record)`
 
 `src/utils/dashboard.js`
+
 - `getLastNDaysLogs(logs, n)`
 - `calculateAverage(numbers)`
 - `formatNumber(value, decimals)`
 - `calculateWeightChange(logs)`
-- `getHabitCounts(logs)`
 - `getWorkoutSummaryForDate(workoutLogs, date)`
 - `getWorkoutDaysCount(workoutLogs, days)`
 - `getRecentDateStrings(todayDate, days)`
@@ -371,107 +376,115 @@ Backward compatibility:
 
 - UI must remain Traditional Chinese zh-TW.
 - Do not use Simplified Chinese.
+- Data stays in browser `localStorage`.
 - No backend.
 - No login.
 - No cloud sync.
 - No calorie tracking.
 - No AI meal analysis.
 - No AI photo recognition.
-- No Apple Health / Google Fit sync.
+- No Apple Health or Google Fit sync.
 - Exercise Log is strength-training only.
-- Each workout can contain multiple exercises.
-- Each exercise can contain multiple per-set records.
+- Each exercise can contain multiple individual set records.
 - BMI uses `settings.heightCm`.
 - Sleep duration supports crossing midnight.
-- Data is stored in browser `localStorage`.
 - Dashboard should stay simplified and glanceable.
-- Daily Log intentionally excludes steps and notes.
+- Daily Log intentionally excludes steps, notes, and habit tracking.
 - Body Measurement intentionally excludes notes.
+- Coach report intentionally excludes habits, steps, notes, calories, and AI analysis.
 - Meal templates are categorized by meal type.
 - Water quick amounts support multiple custom options.
 - Favorite exercises are user-defined and stored separately from workout logs.
-- PWA support exists for installable mobile/home-screen use.
+- Main UI typography uses `Noto Sans TC`; warm accent areas use `LXGW WenKai TC`.
+- App icons are generated from `public/icons/app-icon-source.png`; deployed icon paths are root-level public assets.
 
-## 9. Known Limitations or Unfinished Items
-
-- There is no automated test suite.
-- Build passes, but the bundle is larger than Vite’s default 500 kB warning threshold because of chart/icon dependencies.
-- PWA install on phones generally needs HTTPS deployment or an HTTPS tunnel; local HTTP may open but install/service worker behavior can be limited.
-- `dev-dist/` exists from PWA development output and may not need to be committed depending on workflow.
-- No visual/mobile QA was performed in this handoff task.
-- PowerShell may display Traditional Chinese source text as mojibake depending on console encoding. Node reads the source as UTF-8 correctly, and the latest build completed successfully.
-- Some generated/build artifacts may be stale if `dist/` is not rebuilt after future source changes.
-- Data migration is handled by normalizers, but old user `localStorage` should still be smoke-tested manually after structural changes.
-
-## 10. Recommended Next 3 to 5 Steps
-
-1. Run a manual smoke test in a browser with empty `localStorage`.
-2. Test migration with old saved data containing array-style `mealTemplates`, `customWaterQuickAmount`, daily `steps`, daily `notes`, workout notes, and body measurement notes.
-3. Test the Exercise Log repeat-workout flow: add an exercise, save it, add the same exercise on a later date, and verify previous sets are copied.
-4. Test production PWA behavior with `npm.cmd run build` and `npm.cmd run preview`, then on a real phone via HTTPS.
-5. Consider code-splitting Recharts-heavy pages if bundle size becomes a concern.
-
-## 11. Deployment Readiness Status
+## 9. Deployment Status
 
 Current status: build-ready with caveats.
 
-Verified during this handoff:
+Last verified command:
 
 ```powershell
-npm.cmd run build
+cmd /c "npm run build"
 ```
 
 Result:
+
 - Build completed successfully.
-- PWA files were generated:
-  - `dist/manifest.webmanifest`
-  - `dist/registerSW.js`
-  - `dist/sw.js`
-  - Workbox runtime file
-- Vite reported a chunk-size warning over 500 kB.
+- PWA files were generated in `dist/`.
+- `dist/manifest.webmanifest` references:
+  - `/pwa-192x192.png`
+  - `/pwa-512x512.png`
+  - `/maskable-icon-512x512.png`
+- `dist/index.html` references:
+  - `/favicon.ico`
+  - `/apple-touch-icon.png`
+- Vite still reports a chunk-size warning because the main JS bundle is larger than 500 kB.
 
 Recommended local production preview:
 
 ```powershell
-npm.cmd run preview -- --host 127.0.0.1 --port 4173
+npm run preview
 ```
 
-For phone testing on the same Wi-Fi network, run with a network host:
+For phone testing on the same Wi-Fi network:
 
 ```powershell
-npm.cmd run preview -- --host 0.0.0.0 --port 4173
+npm run preview -- --host 0.0.0.0 --port 4173
 ```
 
-Then open the computer’s LAN IP on the phone. For true PWA install behavior, prefer HTTPS hosting.
+For best PWA behavior, deploy over HTTPS.
 
-## 12. Recent Changes From the Latest Step
+## 10. Known Limitations or Unfinished Items
 
-The latest step added PWA support:
+- There is no automated test suite.
+- No full mobile visual QA suite is present.
+- Build passes, but Vite reports a bundle-size warning over 500 kB because of chart/icon dependencies.
+- PWA install and service worker behavior generally require HTTPS.
+- Browser `localStorage` can be cleared by browser settings, manual cleanup, private browsing behavior, or device changes.
+- Data is scoped to browser and domain; moving between deployment domains requires export/import.
+- Coach report copy uses the Clipboard API with a textarea fallback, but clipboard behavior may vary by browser/security context.
+- Google Fonts require network access; fallback fonts are configured if they fail to load.
+- `public/favicon.svg` remains in the project but `index.html` now uses `favicon.ico`.
+- `public/icons/app-icon-source.png` is a source asset and may be copied into `dist/icons/` during build even though the manifest uses generated root-level icons.
+- Data migration is handled by normalizers, but old user `localStorage` should still be smoke-tested manually after structural changes.
 
-- Added `vite-plugin-pwa` to `devDependencies`.
-- Updated `vite.config.js` to use `VitePWA`.
-- Added web app manifest metadata:
-  - App name: `減脂紀錄`
-  - Short name: `減脂紀錄`
-  - Description: `個人用減脂、體重、飲食、喝水、睡眠與重訓紀錄工具`
-  - Theme color: `#0f766e`
-  - Background color: `#f7fbfa`
-  - Display mode: `standalone`
-  - Orientation: `portrait`
-- Added PWA/icon assets:
-  - `public/favicon.svg`
-  - `public/apple-touch-icon.png`
-  - `public/pwa-192x192.png`
-  - `public/pwa-512x512.png`
-- Updated `index.html` metadata for PWA/mobile install support.
+## 11. Recommended Next Steps
 
-Recent product changes before PWA:
+1. Run a manual smoke test with empty `localStorage`.
+2. Run a manual migration smoke test with old data containing `habits`, `steps`, `notes`, old array-style `mealTemplates`, `customWaterQuickAmount`, old workout notes, and old body measurement notes.
+3. Test Daily Log save/load and verify the coach report updates before saving and after loading a saved record.
+4. Test the copy button in Chrome, Safari, and on a phone after HTTPS deployment.
+5. Test Exercise Log repeat-workout flow: save an exercise, add the same exercise on a later date, and verify previous sets are copied.
+6. Test production PWA install on iPhone and Android over HTTPS.
+7. Consider code-splitting Recharts-heavy pages if bundle size becomes a concern.
 
-- Dashboard was simplified.
-- Daily Log removed steps and notes.
-- Meal templates became categorized by meal type.
-- Water quick buttons became configurable with multiple custom amounts.
-- Exercise Log moved to user-defined favorite exercises.
-- Exercise Log added same-exercise previous-set auto-fill.
-- Exercise Log added movement progress history and highest-weight trend.
-- Body Measurement removed notes and long explanation text.
+## 12. New Codex Conversation Starter
+
+Use this to start a new Codex session:
+
+```text
+I am continuing an existing React + Vite personal fat-loss tracking app.
+
+Please read HANDOFF.md and README.md first, then inspect the current codebase before making changes.
+
+Important project rules:
+- Do not rebuild from scratch.
+- Keep the UI in Traditional Chinese zh-TW.
+- Do not use Simplified Chinese.
+- Do not add backend, login, cloud sync, calorie tracking, AI meal analysis, or AI photo recognition unless I explicitly ask.
+- Data is stored in localStorage.
+- Exercise Log is strength-training only.
+- Each exercise can contain multiple individual set records.
+- BMI uses height from settings.
+- Sleep duration supports crossing midnight.
+- Meal templates are categorized by meal type.
+- Water quick amounts support multiple custom options.
+- Favorite exercises are user-defined.
+- Dashboard should stay simplified.
+- Daily Log excludes steps, notes, and habit tracking.
+- Coach report excludes habits, steps, notes, calories, and AI analysis.
+- Make small, safe changes only.
+
+First, summarize your understanding of the current app from HANDOFF.md and README.md, then inspect the relevant files before making changes.
+```
